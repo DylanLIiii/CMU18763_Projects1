@@ -1,12 +1,11 @@
-# CMU18763_Projects1
+# FiFA 2015-2022 Analyst
 
-## How to use 
+## How to use it 
 
-In the early stage of project, it will use single jupyter notebook to process. So, to use it just simply run each cell like what you do normally. The file path should be changed to you local machine path. That's all. 
+## Data Describtion
+<details>
+<summary>Column Explaination</summary>
 
-## description for the features
-
-- `_c0`: This column is an integer type. It might represent an index or ID of some sort, but it isn't clear from the name alone.
 - `sofifa_id`: This is an integer that represents the unique ID of a player in the SoFIFA database.
 - `player_url`: This is a string that contains the URL of a player's profile.
 - `short_name`: This is a string representing the short name of the player.
@@ -61,7 +60,8 @@ In the early stage of project, it will use single jupyter notebook to process. S
 - `year`: This integer represents the year of the data.
 - `id`: This long integer likely represents a unique identifier for each row or record in the dataset.
 
-## some example constrains
+
+<summary>some example constrains in SQL Database</summary>
 
 - `_c0 INT PRIMARY KEY`: Defines `_c0` as an integer field that serves as the primary key.
 - `sofifa_id INT NOT NULL`: Defines `sofifa_id` as an integer field that cannot be null.
@@ -91,3 +91,6 @@ In the early stage of project, it will use single jupyter notebook to process. S
 - `nation_team_id INT`: Defines `nation_team_id` as an integer field.
 - `nation_position VARCHAR(50)`: Defines `nation_position` as a string of up to 50 characters.
 - `nation_jersey_number INT`: Defines `nation_jersey_number` as an integer field.
+
+
+</details>
