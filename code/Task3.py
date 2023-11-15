@@ -25,23 +25,22 @@ import torch.nn as nn
 import argparse
 import gc
 
-'''parser = argparse.ArgumentParser(
+parser = argparse.ArgumentParser(
     description="Spark Machine Learning Pipeline for FIFA Dataset"
 )
 
-parser.add_argument("--input_path", type=str,
+parser.add_argument("input_path", type=str,
                     help="Input path", default="/fifadata")
 parser.add_argument("--output_path", type=str,
                     help="Output path", default="/output")
-parser.add_argument("--use_clean_data", type=bool, help="Use clean data or not", default=False)
 parser.add_argument("--verbose", type=int, help="Verbose or not", default=1)
+parser.add_argument("--use_wandb_log", type=int, help="Use wandb log or not", default=0)
 
 args = parser.parse_args()
 
 input_path = args.input_path
 output_path = args.output_path
-use_clean_data = args.use_clean_data
-'''
+
 SEED = 3407
 IS_SPARKML = False
 

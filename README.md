@@ -1,8 +1,27 @@
 # FiFA 2015-2022 Analyst
-
+This is a project contains following parts. 
+- Detailed EDA.
+- Healthy data processing and machine learning pipeline.
+- With pyspark and postgreSQL.
 ## How to use it 
+You can choose to use the jupyter notebook or the python file. For Task1&2 using jupyter notebook, for Task3 using jupyter notebook and python scripts.
+
+- **Notebook**: contains one EDA, one Task1&2 jupyter, one Data preprocessing(This is a notebook for data preprocessing, you can choose to use it or not, because I have already intergrate it with spark pipeline) and on Task3 jupyter notebook for Google Cloud. 
+- **Code**: contains utils, models, train.py. You can task3.py to run the whole pipeline. 
+- **Data**: contains the data I used in this project.
+
+### Using Jupyter Notebook 
+
+Just run jupyter notebooks in Notebook folder. 
+
+### Using Python Scripts
+For Task3, you can use python scripts. 
+
+`python task3.py input_path <input_path> --output_path <output_path> --verbose <verbose> --wandb <is_wandb>`
+You can use `python task3.py -h` to see the help information of arguments. 
 
 ## Data Describtion
+
 <details>
 <summary>Column Explaination</summary>
 
@@ -60,7 +79,9 @@
 - `year`: This integer represents the year of the data.
 - `id`: This long integer likely represents a unique identifier for each row or record in the dataset.
 
+</details>
 
+<details>
 <summary>some example constrains in SQL Database</summary>
 
 - `_c0 INT PRIMARY KEY`: Defines `_c0` as an integer field that serves as the primary key.
@@ -91,6 +112,5 @@
 - `nation_team_id INT`: Defines `nation_team_id` as an integer field.
 - `nation_position VARCHAR(50)`: Defines `nation_position` as a string of up to 50 characters.
 - `nation_jersey_number INT`: Defines `nation_jersey_number` as an integer field.
-
 
 </details>
