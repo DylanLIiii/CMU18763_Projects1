@@ -1,26 +1,40 @@
 # FiFA 2015-2022 Analyst
-This is a project contains following parts. 
+
+This is a project contains following parts.
+
 - Detailed EDA.
 - Healthy data processing and machine learning pipeline.
 - With pyspark and postgreSQL.
-## How to use it 
+
+## How to use it
+
 You can choose to use the jupyter notebook or the python file. For Task1&2 using jupyter notebook, for Task3 using jupyter notebook and python scripts.
 
-- **Notebook**: contains one EDA, one Task1&2 jupyter, one Data preprocessing(This is a notebook for data preprocessing, you can choose to use it or not, because I have already intergrate it with spark pipeline) and on Task3 jupyter notebook for Google Cloud. 
-- **Code**: contains utils, models, train.py. You can task3.py to run the whole pipeline. 
+- **Notebook**: contains one EDA, one Task1&2 jupyter, one Data preprocessing(This is a notebook for data preprocessing, you can choose to use it or not, because I have already intergrate it with spark pipeline) and on Task3 jupyter notebook for Google Cloud.
+- **Code**: contains utils, models, train.py. You can task3.py to run the whole pipeline.
 - **Data**: contains the data I used in this project.
 
-### Using Jupyter Notebook 
+### Create your conda or pip env 
 
-Just run jupyter notebooks in Notebook folder. 
+ `conda create --name <env> `--file ``requirments.txt``
+
+It will create a conda env for the project. 
+
+### Using Jupyter Notebook
+
+Just run jupyter notebooks in Notebook folder.
 
 ### Using Python Scripts
-For Task3, you can use python scripts. 
+
+For Task3, you can use python scripts.
 
 `python task3.py input_path <input_path> --output_path <output_path> --verbose <verbose> --wandb <is_wandb>`
-You can use `python task3.py -h` to see the help information of arguments. 
+You can use `python task3.py -h` to see the help information of arguments. You must specify the input_path (Your data path like `/data`)
 
 ## Data Describtion
+
+- Data Report:
+- Data EDA: [FIFA2022 EDA](https://www.kaggle.com/code/dylanhedded/fifa2022-eda)
 
 <details>
 <summary>Column Explaination</summary>
