@@ -446,7 +446,7 @@ import matplotlib.pyplot as plt
 import wandb
 
 class PySparkMLModel:
-    def __init__(self, model_type="logistic", learning_rate=0.01, is_wandb=IS_WANDB, is_plot=False):
+    def __init__(self, model_type="linear", learning_rate=0.01, is_wandb=IS_WANDB, is_plot=False):
         self.model_type = model_type
         self.learning_rate = learning_rate
         self.model = None
