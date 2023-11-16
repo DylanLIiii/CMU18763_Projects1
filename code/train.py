@@ -2,19 +2,21 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
-from torch.utils.tensorboard import SummaryWriter
 import numpy as np
 import pandas as pd 
 from pyspark.sql.functions import col
 from tqdm import tqdm
+import wandb
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-def train_model(model, train_loader, val_loader, epochs, learning_rate):
+def train_model(model, train_loader, val_loader, epochs, learning_rate, is_wandb=False):
     model = model.to(device)
+    if is_wandb:
+        wandb.watch(model, log="all", log_freq=50)
     criterion = nn.MSELoss()  # Mean Squared Error Loss for regression
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    writer = SummaryWriter()  # TensorBoard writer
+    LRScheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=5, verbose=True)
 
     for epoch in range(epochs):
         model.train()
@@ -32,13 +34,10 @@ def train_model(model, train_loader, val_loader, epochs, learning_rate):
 
         avg_loss = total_loss / len(train_loader)
         val_loss = validate_model(model, val_loader, criterion)
+        if is_wandb:
+            wandb.log({"Train Loss": avg_loss, "Validation Loss": val_loss, "Epoch": epoch})
         print(f'Epoch {epoch+1}/{epochs}, Train Loss: {avg_loss:.4f}, Validation Loss: {val_loss:.4f}')
 
-        # Logging to TensorBoard
-        writer.add_scalar('Loss/Train', avg_loss, epoch)
-        writer.add_scalar('Loss/Validation', val_loss, epoch)
-
-    writer.close()
     return model
 
 def validate_model(model, val_loader, criterion):

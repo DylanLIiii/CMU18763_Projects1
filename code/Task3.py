@@ -1,6 +1,6 @@
-from code.utils import ReduceMemory
-from code.train import train_model, validate_model, data_loader
-from code.models import MLPRegressor, TransformerRegressor, MLPResidualRegressor
+from utils import ReduceMemory
+from train import train_model, validate_model, data_loader
+from models import MLPRegressor, TransformerRegressor, MLPResidualRegressor
 
 # Create argparser
 from pyspark.ml.feature import (
@@ -31,18 +31,22 @@ parser = argparse.ArgumentParser(
 
 parser.add_argument("input_path", type=str,
                     help="Input path", default="/fifadata")
-parser.add_argument("--output_path", type=str,
-                    help="Output path", default="/output")
 parser.add_argument("--verbose", type=int, help="Verbose or not", default=1)
-parser.add_argument("--use_wandb_log", type=int, help="Use wandb log or not", default=0)
-
+parser.add_argument("--is_wandb", type=int, help="Use wandb log or not", default=0)
+parser.add_argument("--is_sparkml", type=int, help="Use sparkml or not", default=0)
+parser.add_argument("--is_pytorch", type=int, help="Use pytorch or not", default=0)
+parser.add_argument("--is_infer", type=int, help="Infer or test, test will use smaller dataset and epochs", default=0)
+parser.add_argument("--output_path", type=str, help="Output path", default="../model")
 args = parser.parse_args()
 
 input_path = args.input_path
 output_path = args.output_path
 
 SEED = 3407
-IS_SPARKML = False
+IS_SPARKML = args.is_sparkml
+IS_PYTORCH = args.is_pytorch
+IS_WANDB = args.is_wandb
+IS_INFER = args.is_infer
 
 # seed everything for reproducibility
 def seed_everything(seed: int):
@@ -61,8 +65,10 @@ def seed_everything(seed: int):
 seed_everything(seed=SEED)
 
 # init a spark session
-# if linux 
-os.environ['SPARK_LOCAL_IP'] = '100.112.240.153'
+# if linux is true, then we are running on linux
+linux = True
+if linux:
+    os.environ['SPARK_LOCAL_IP'] = '100.112.240.153'
 spark = SparkSession.builder.appName("FIFA Dataset").getOrCreate()
 
 # define some config
@@ -437,7 +443,7 @@ import matplotlib.pyplot as plt
 import wandb
 
 class PySparkMLModel:
-    def __init__(self, model_type="logistic", learning_rate=0.01, is_wandb=False, is_plot=False):
+    def __init__(self, model_type="logistic", learning_rate=0.01, is_wandb=IS_WANDB, is_plot=False):
         self.model_type = model_type
         self.learning_rate = learning_rate
         self.model = None
@@ -447,7 +453,7 @@ class PySparkMLModel:
 
         # Initialize Weights & Biases
         if self.wandb: 
-            wandb.init(project="pyspark_ml_model", entity="your_username")
+            wandb.init(project="18763", name=f"{self.model_type}_model", reinit=True)
             wandb.config.update({"learning_rate": self.learning_rate})
 
     def train(self, train_data):
@@ -536,38 +542,47 @@ class PySparkMLModel:
         if self.wandb: 
             self.close()
 if IS_SPARKML:
-    logistic_model = PySparkMLModel(model_type="linear", learning_rate=0.01, is_plot=False)
+    logistic_model = PySparkMLModel(model_type="linear", learning_rate=0.001, is_plot=False)
     logistic_model.run_pipeline(train, val, test)
 
     dt_model = PySparkMLModel(model_type="decision_tree", is_plot=False)
     dt_model.run_pipeline(train, val, test)
 
 ### Pytorch Pipeline 
-train_loader_MLP, val_loader_MLP = data_loader(train=train, val=val, batch_size=4096)
+train_loader_MLP, val_loader_MLP = data_loader(train=train, val=val, batch_size=512)
 train_loader_TS, val_loader_TS = data_loader(train=train, val=val, batch_size=256)
 input_dim = train.select('features').first()[0].size
 model_list = [
     MLPRegressor(input_size=input_dim, hidden_sizes=[1024, 512, 256, 64], output_size=1),
     #TransformerRegressor(input_size=input_dim, d_model=512, nhead=8, num_layers=6, output_size=1)
-    MLPResidualRegressor(input_dim, [1024, 512, 256, 64], 1)
+    MLPResidualRegressor(input_dim, [1024, 512, 512, 256, 256, 64, 32, 16], 1)
     ]
 
-for model in model_list:
-    if model.__class__.__name__ == 'MLPRegressor':
-        print(f"Training {model.__class__.__name__} model, {model.__class__.__name__ == 'MLPRegressor'}")
-        trained_model = train_model(model, train_loader_MLP, val_loader_MLP, epochs=300, learning_rate=0.0003)
-        torch.save(trained_model.state_dict(), f"{model.__class__.__name__}.pt")
-        trained_model.eval()
-        test_loss = validate_model(model, val_loader_MLP, nn.MSELoss())
-        print(f"Test loss for {model.__class__.__name__} model = {test_loss}")
-    else: 
-        print(f"Training {model.__class__.__name__} model, {model.__class__.__name__ == 'MLPResidualRegressor'}")
-        trained_model = train_model(model, train_loader_MLP, val_loader_MLP, epochs=100, learning_rate=0.0003)
-        torch.save(trained_model.state_dict(), f"{model.__class__.__name__}.pt")
-        trained_model.eval()
-        test_loss = validate_model(model, val_loader_TS, nn.MSELoss())
-        print(f"Test loss for {model.__class__.__name__} model = {test_loss}")
-    del trained_model
-    torch.cuda.empty_cache()
-    gc.collect()
+if IS_PYTORCH:
     
+        
+    for model in model_list:
+        if model.__class__.__name__ == 'MLPRegressor':
+            if IS_WANDB:
+                run = wandb.init(project="18763", name="MLPRegressor", reinit=True, notes="large lr ")
+            print(f"Training {model.__class__.__name__} model, {model.__class__.__name__ == 'MLPRegressor'}")
+            print(model)
+            trained_model = train_model(model, train_loader_MLP, val_loader_MLP, epochs=60, learning_rate=0.003, is_wandb=IS_WANDB)
+            torch.save(trained_model.state_dict(), f"{model.__class__.__name__}.pt")
+            trained_model.eval()
+            test_loss = validate_model(model, val_loader_MLP, nn.MSELoss())
+            print(f"Test loss for {model.__class__.__name__} model = {test_loss}")
+        else: 
+            if IS_WANDB:
+                run = wandb.init(project="18763", name="MLPResidualRegressor", reinit=True, notes="large lr")
+                print(model)
+            print(f"Training {model.__class__.__name__} model, {model.__class__.__name__ == 'MLPResidualRegressor'}")
+            trained_model = train_model(model, train_loader_MLP, val_loader_MLP, epochs=60, learning_rate=0.003, is_wandb=IS_WANDB)
+            torch.save(trained_model.state_dict(), f"{model.__class__.__name__}.pt")
+            trained_model.eval()    
+            test_loss = validate_model(model, val_loader_MLP, nn.MSELoss())
+            print(f"Test loss for {model.__class__.__name__} model = {test_loss}")
+        del trained_model
+        torch.cuda.empty_cache()
+        gc.collect()
+        

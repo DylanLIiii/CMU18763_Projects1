@@ -46,22 +46,42 @@ In this project, I use pyspark for General Machine Learning Model, utiliz pytorc
 #### ML Models
 
 - Linear Regression
-  - Reason to choose: **Use linear regression as baseline performance for comparison to facilitate implementation.**
+  - Reason to choose: **Use linear regression as baseline performance for comparison to facilitate implementation. Another reason is that from visual analysis, it can be found that features and overall have a strong correlation.**
+  - Train RMSE With lr 0.01: 1.66797
+  - Val RMSE With lr 0.01: 1.65661
 
 - Decision Tree
   - Reason to choose: **Tree models are always proven to be more effective on tabular data, especially tree models powered by gradient boosting algorithms, and I chose decision trees to exceed baseline performance.**
+  - Train RMSE With lr 0.01: 1.835102
+  - Val RMSE With lr 0.01: 1.8603
+
+**Conclusion**: We use Linear Regression as the baseline without adjusting too many parameters for individual models. We can see that Linear Regression is dominant. This is in line with our intuition. When the linear correlation between features and target is high, linear regression can Get good results. And decision trees are always good at dealing with non-linear related features.
 
 
 #### DL Models
 
-- MLP(1024, 512, 256, 64): An ordinary multi-layer perceptron model, using Adam as the optimizer and MSE as the loss function, with a learning rate of 0.0003 and training 300 epochs.
+- MLP: An ordinary multi-layer perceptron model, using Adam as the optimizer and MSE as the loss function, with a learning rate of 0.0003 and training 300 epochs.
   - Reason to choose: A simple yet effective MLP model is common as a baseline, which facilitates comparison of performance and is easy to implement.
-  - Train Loss: 
-  - Val Loss: 
+- Results
+  - Hidden size: 1024, 512, 256, 64. LR: 0.003, Epoch:100, NO LR Scheduler.
+    - Train Loss: 0.6765
+    - Val Loss: 0.5828
+  - Hidden size: 1024, 512, 256, 64. LR: 0.01, Epoch:100, with LR Scheduler.
+    - Train Loss: 0.8225
+    - Val Loss: 0.7001
 - MLP with residual link(1024, 512, 512, 256, 64, 32, 16): An MLP with residual link (Kaiming He). using Adam as the optimizer and MSE as the loss function, with a learning rate of 0.0003 and training 100 epochs. 
   - Reason to choose: **Residual connections give us the opportunity to create deeper networks. The depth of the network should lead to better fitting performance.**
-  - Train Loss:
-  - Val Loss:
+- Results:
+  - Hidden size: 1024, 512, 512, 256, 64, LR: 0.003, Epoch:60, NO LR Scheduler.
+    - Train Loss: 0.5704
+    - Val Loss: 0.5759
+  - Hidden size: 1024, 512, 512, 256, 256, 64, 32, 16. (Deeper) LR: 0.01, Epoch:60, with LR Scheduler.
+    - Train Loss: 1.129
+    - Val Loss: 1.844
+
+**Conclusion**:  We use MLP as the baseline. We can see that when the epoch is high, both converge, even without the lr scheduler. However, the residual MLP that increases the learning rate, deepens the network, and trains for fewer epochs is worse. This may be This is because deeper networks require smaller learning rates and longer training rounds. But in general, neural networks perform better.
+
+<iframe src="https://wandb.ai/dylanli/18763/reports/Report-for-model-results--Vmlldzo1OTkyNDE1" style="border:none;height:1024px;width:100%">
 
 ## Data Describtion
 

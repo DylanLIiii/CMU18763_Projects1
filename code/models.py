@@ -61,31 +61,38 @@ class TransformerRegressor(nn.Module):
 
 # Usage example: model = TransformerRegressor(input_size=50, d_model=512, nhead=8, num_layers=6, output_size=1)
 
+class ResidualBlock(nn.Module):
+    def __init__(self, input_size, output_size):
+        super(ResidualBlock, self).__init__()
+        self.fc = nn.Linear(input_size, output_size)
+        self.activation = nn.ReLU()
+
+        # Adding a linear transformation for the residual link if input and output sizes differ
+        if input_size != output_size:
+            self.shortcut = nn.Linear(input_size, output_size)
+        else:
+            self.shortcut = nn.Identity()
+
+    def forward(self, x):
+        identity = self.shortcut(x)
+        out = self.fc(x)
+        out = self.activation(out + identity)
+        return out
+
 class MLPResidualRegressor(nn.Module):
     def __init__(self, input_size, hidden_sizes, output_size):
         super(MLPResidualRegressor, self).__init__()
-        self.layers = nn.ModuleList()
-        for i in range(len(hidden_sizes)):
-            if i == 0:
-                self.layers.append(nn.Linear(input_size, hidden_sizes[i]))
-            else:
-                self.layers.append(nn.Linear(hidden_sizes[i-1], hidden_sizes[i]))
-            self.layers.append(nn.ReLU())
 
-        self.skip_layers = nn.ModuleList()
-        for i in range(len(hidden_sizes) - 1):
-            self.skip_layers.append(nn.Linear(hidden_sizes[i], hidden_sizes[i+1]))
+        layers = []
+        current_size = input_size
+        for hidden_size in hidden_sizes:
+            layers.append(ResidualBlock(current_size, hidden_size))
+            current_size = hidden_size
 
+        self.layers = nn.Sequential(*layers)
         self.output_layer = nn.Linear(hidden_sizes[-1], output_size)
 
     def forward(self, x):
-        residual = x
-        for i in range(0, len(self.layers), 2):
-            x = self.layers[i](x)
-            if i < len(self.skip_layers):
-                residual = self.skip_layers[i//2](residual)
-                x += residual  # Skip connection
-                residual = x
-            x = self.layers[i+1](x)
+        x = self.layers(x)
         x = self.output_layer(x)
         return x
