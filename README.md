@@ -28,10 +28,44 @@ Just run jupyter notebooks in Notebook folder using python kernel in your env.
 
 ### Using Python Scripts
 
+<details>
+<summary>Params in scripts</summary>
+- Verbose Mode:
+Use --verbose followed by 0 or 1 to turn off or on verbose mode (more detailed output).
+Example: --verbose 1
+- wandb Logging:
+Use --is_wandb followed by 0 or 1 to disable or enable wandb logging.
+Example: --is_wandb 1
+- SparkML Usage:
+Use --is_sparkml followed by 0 or 1 to specify whether to use SparkML.
+Example: --is_sparkml 1
+- PyTorch Usage:
+Use --is_pytorch followed by 0 or 1 to specify whether to use PyTorch.
+Example: --is_pytorch 1
+- Inference Mode:
+Use --is_infer followed by 0 or 1 to select between inference mode (1) or test mode (0). Test mode uses a smaller dataset and fewer epochs.
+Example: --is_infer 1
+- Output Path:
+Use --output_path followed by the path where you want to save the output.
+Example: --output_path /path/to/output
+</details>
+
+
 For Task3, you can use python scripts in your env.
 
-`python task3.py input_path <input_path> --output_path <output_path> --verbose <verbose> --wandb <is_wandb>`
+`python Task3.py /path/to/input --verbose 1 --is_wandb 0 --is_sparkml 1 --is_pytorch 0 --is_infer 0 --output_path /path/to/output`
+
+Here I recommand a quick test to run it, you can use 
+
+`python Task3.py /path/to/inputdata --verbose 1 --is_wandb 0 --is_sparkml 1 --is_pytorch 1 --is_infer 0 --output_path /path/to/outputmodel` to have a quick test. Set `is_infer` to 1 to run full inference pipeline.
+
+> When you set `is_infer` to 0, it will use small data to train and test. When you set `is_infer` to 1, it will use full data to train and test.
+
 You can use `python task3.py -h` to see the help information of arguments. You must specify the input_path (Your data path like `/data`)
+
+---
+
+Note that in `Task3.py` and `Task1&2.ipynb`, I set the environment variables of pyspark. If you need to run it locally, **please comment the environment variable settings and use the IP address that your local pyspark instance can bind to.**
 
 ## Model Performance
 
