@@ -424,6 +424,9 @@ data = load_data('/home/dylan/repo/CMU18763_Projects1/fifadata', '/home/dylan/re
 if '_c0' in data.columns:
     data = data.drop('_c0')
     
+if not IS_INFER:
+    data = data.sample(withReplacement=False, fraction=0.1, seed=SEED)
+
 # get the pipeline 
 pipeline = get_preprocess_pipeline()
 pipeline_model = pipeline.fit(data)
@@ -558,6 +561,11 @@ model_list = [
     MLPResidualRegressor(input_dim, [1024, 512, 512, 256, 256, 64, 32, 16], 1)
     ]
 
+if not IS_INFER:
+    epochs = 10
+else:
+    epochs = 100
+
 if IS_PYTORCH:
     
         
@@ -567,7 +575,7 @@ if IS_PYTORCH:
                 run = wandb.init(project="18763", name="MLPRegressor", reinit=True, notes="large lr ")
             print(f"Training {model.__class__.__name__} model, {model.__class__.__name__ == 'MLPRegressor'}")
             print(model)
-            trained_model = train_model(model, train_loader_MLP, val_loader_MLP, epochs=60, learning_rate=0.003, is_wandb=IS_WANDB)
+            trained_model = train_model(model, train_loader_MLP, val_loader_MLP, epochs=epochs, learning_rate=0.003, is_wandb=IS_WANDB)
             torch.save(trained_model.state_dict(), f"{model.__class__.__name__}.pt")
             trained_model.eval()
             test_loss = validate_model(model, val_loader_MLP, nn.MSELoss())
@@ -577,7 +585,7 @@ if IS_PYTORCH:
                 run = wandb.init(project="18763", name="MLPResidualRegressor", reinit=True, notes="large lr")
                 print(model)
             print(f"Training {model.__class__.__name__} model, {model.__class__.__name__ == 'MLPResidualRegressor'}")
-            trained_model = train_model(model, train_loader_MLP, val_loader_MLP, epochs=60, learning_rate=0.003, is_wandb=IS_WANDB)
+            trained_model = train_model(model, train_loader_MLP, val_loader_MLP, epochs=epochs, learning_rate=0.003, is_wandb=IS_WANDB)
             torch.save(trained_model.state_dict(), f"{model.__class__.__name__}.pt")
             trained_model.eval()    
             test_loss = validate_model(model, val_loader_MLP, nn.MSELoss())
