@@ -6,8 +6,7 @@ This is a project contains following parts.
 - Healthy data processing and machine learning pipeline.
 - With pyspark and postgreSQL.
 
-> A Video to walkthrough the project: 
-
+> A Video to walkthrough the project: https://cmu.box.com/s/dsq1lc9wty1u5zkt63mfypu3hgup89k3
 ## How to use it
 
 You can choose to use the jupyter notebook or the python file. For Task1&2 using jupyter notebook, for Task3 using jupyter notebook and python scripts.
