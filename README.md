@@ -28,10 +28,44 @@ Just run jupyter notebooks in Notebook folder using python kernel in your env.
 
 ### Using Python Scripts
 
+<details>
+<summary>Params in scripts</summary>
+- Verbose Mode:
+Use --verbose followed by 0 or 1 to turn off or on verbose mode (more detailed output).
+Example: --verbose 1
+- wandb Logging:
+Use --is_wandb followed by 0 or 1 to disable or enable wandb logging.
+Example: --is_wandb 1
+- SparkML Usage:
+Use --is_sparkml followed by 0 or 1 to specify whether to use SparkML.
+Example: --is_sparkml 1
+- PyTorch Usage:
+Use --is_pytorch followed by 0 or 1 to specify whether to use PyTorch.
+Example: --is_pytorch 1
+- Inference Mode:
+Use --is_infer followed by 0 or 1 to select between inference mode (1) or test mode (0). Test mode uses a smaller dataset and fewer epochs.
+Example: --is_infer 1
+- Output Path:
+Use --output_path followed by the path where you want to save the output.
+Example: --output_path /path/to/output
+</details>
+
+
 For Task3, you can use python scripts in your env.
 
-`python task3.py input_path <input_path> --output_path <output_path> --verbose <verbose> --wandb <is_wandb>`
+`python Task3.py /path/to/input --verbose 1 --is_wandb 0 --is_sparkml 1 --is_pytorch 0 --is_infer 0 --output_path /path/to/output`
+
+Here I recommand a quick test to run it, you can use 
+
+`python Task3.py /path/to/inputdata --verbose 1 --is_wandb 0 --is_sparkml 1 --is_pytorch 1 --is_infer 0 --output_path /path/to/outputmodel` to have a quick test. Set `is_infer` to 1 to run full inference pipeline.
+
+> When you set `is_infer` to 0, it will use small data to train and test. When you set `is_infer` to 1, it will use full data to train and test.
+
 You can use `python task3.py -h` to see the help information of arguments. You must specify the input_path (Your data path like `/data`)
+
+---
+
+Note that in `Task3.py` and `Task1&2.ipynb`, I set the environment variables of pyspark. If you need to run it locally, **please comment the environment variable settings and use the IP address that your local pyspark instance can bind to.**
 
 ## Model Performance
 
@@ -46,22 +80,42 @@ In this project, I use pyspark for General Machine Learning Model, utiliz pytorc
 #### ML Models
 
 - Linear Regression
-  - Reason to choose: **Use linear regression as baseline performance for comparison to facilitate implementation.**
+  - Reason to choose: **Use linear regression as baseline performance for comparison to facilitate implementation. Another reason is that from visual analysis, it can be found that features and overall have a strong correlation.**
+  - Train RMSE With lr 0.01: 1.66797
+  - Val RMSE With lr 0.01: 1.65661
 
 - Decision Tree
   - Reason to choose: **Tree models are always proven to be more effective on tabular data, especially tree models powered by gradient boosting algorithms, and I chose decision trees to exceed baseline performance.**
+  - Train RMSE With lr 0.01: 1.835102
+  - Val RMSE With lr 0.01: 1.8603
+
+**Conclusion**: We use Linear Regression as the baseline without adjusting too many parameters for individual models. We can see that Linear Regression is dominant. This is in line with our intuition. When the linear correlation between features and target is high, linear regression can Get good results. And decision trees are always good at dealing with non-linear related features.
 
 
 #### DL Models
 
-- MLP(1024, 512, 256, 64): An ordinary multi-layer perceptron model, using Adam as the optimizer and MSE as the loss function, with a learning rate of 0.0003 and training 300 epochs.
+- MLP: An ordinary multi-layer perceptron model, using Adam as the optimizer and MSE as the loss function, with a learning rate of 0.0003 and training 300 epochs.
   - Reason to choose: A simple yet effective MLP model is common as a baseline, which facilitates comparison of performance and is easy to implement.
-  - Train Loss: 
-  - Val Loss: 
+- Results
+  - Hidden size: 1024, 512, 256, 64. LR: 0.003, Epoch:100, NO LR Scheduler.
+    - Train Loss: 0.6765
+    - Val Loss: 0.5828
+  - Hidden size: 1024, 512, 256, 64. LR: 0.01, Epoch:100, with LR Scheduler.
+    - Train Loss: 0.8225
+    - Val Loss: 0.7001
 - MLP with residual link(1024, 512, 512, 256, 64, 32, 16): An MLP with residual link (Kaiming He). using Adam as the optimizer and MSE as the loss function, with a learning rate of 0.0003 and training 100 epochs. 
   - Reason to choose: **Residual connections give us the opportunity to create deeper networks. The depth of the network should lead to better fitting performance.**
-  - Train Loss:
-  - Val Loss:
+- Results:
+  - Hidden size: 1024, 512, 512, 256, 64, LR: 0.003, Epoch:60, NO LR Scheduler.
+    - Train Loss: 0.5704
+    - Val Loss: 0.5759
+  - Hidden size: 1024, 512, 512, 256, 256, 64, 32, 16. (Deeper) LR: 0.01, Epoch:60, with LR Scheduler.
+    - Train Loss: 1.129
+    - Val Loss: 1.844
+
+**Conclusion**:  We use MLP as the baseline. We can see that when the epoch is high, both converge, even without the lr scheduler. However, the residual MLP that increases the learning rate, deepens the network, and trains for fewer epochs is worse. This may be This is because deeper networks require smaller learning rates and longer training rounds. But in general, neural networks perform better.
+
+**SEE DETAILED LOG**: https://api.wandb.ai/links/dylanli/xfplxl1r
 
 ## Data Describtion
 
