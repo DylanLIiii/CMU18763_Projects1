@@ -420,7 +420,7 @@ def load_data(input_path, output_path):
     return df
 
 
-data = load_data('/home/dylan/repo/CMU18763_Projects1/fifadata', '/home/dylan/repo/CMU18763_Projects1/output')
+data = load_data(input_path, '../data/output/')
 if '_c0' in data.columns:
     data = data.drop('_c0')
     
