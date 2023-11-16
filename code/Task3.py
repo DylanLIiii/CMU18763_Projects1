@@ -1,6 +1,6 @@
 from code.utils import ReduceMemory
 from code.train import train_model, validate_model, data_loader
-from code.models import MLPRegressor, TransformerRegressor
+from code.models import MLPRegressor, TransformerRegressor, MLPResidualRegressor
 
 # Create argparser
 from pyspark.ml.feature import (
@@ -547,8 +547,9 @@ train_loader_MLP, val_loader_MLP = data_loader(train=train, val=val, batch_size=
 train_loader_TS, val_loader_TS = data_loader(train=train, val=val, batch_size=256)
 input_dim = train.select('features').first()[0].size
 model_list = [
-    #MLPRegressor(input_size=input_dim, hidden_sizes=[1024, 512, 256, 64], output_size=1),
-    TransformerRegressor(input_size=input_dim, d_model=512, nhead=8, num_layers=6, output_size=1)
+    MLPRegressor(input_size=input_dim, hidden_sizes=[1024, 512, 256, 64], output_size=1),
+    #TransformerRegressor(input_size=input_dim, d_model=512, nhead=8, num_layers=6, output_size=1)
+    MLPResidualRegressor(input_dim, [1024, 512, 256, 64], 1)
     ]
 
 for model in model_list:
@@ -560,13 +561,13 @@ for model in model_list:
         test_loss = validate_model(model, val_loader_MLP, nn.MSELoss())
         print(f"Test loss for {model.__class__.__name__} model = {test_loss}")
     else: 
-        print(f"Training {model.__class__.__name__} model, {model.__class__.__name__ == 'TransformerRegressor'}")
-        trained_model = train_model(model, train_loader_TS, val_loader_TS, epochs=5, learning_rate=0.001)
+        print(f"Training {model.__class__.__name__} model, {model.__class__.__name__ == 'MLPResidualRegressor'}")
+        trained_model = train_model(model, train_loader_MLP, val_loader_MLP, epochs=100, learning_rate=0.0003)
         torch.save(trained_model.state_dict(), f"{model.__class__.__name__}.pt")
         trained_model.eval()
         test_loss = validate_model(model, val_loader_TS, nn.MSELoss())
         print(f"Test loss for {model.__class__.__name__} model = {test_loss}")
-    del trained_model 
+    del trained_model
     torch.cuda.empty_cache()
     gc.collect()
     

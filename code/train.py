@@ -19,7 +19,7 @@ def train_model(model, train_loader, val_loader, epochs, learning_rate):
     for epoch in range(epochs):
         model.train()
         total_loss = 0
-        for batch in rqdm(train_loader):
+        for batch in tqdm(train_loader):
             inputs, targets = batch
             inputs = inputs.to(device)
             targets = targets.reshape(-1,1).to(device)

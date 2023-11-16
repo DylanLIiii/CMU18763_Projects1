@@ -6,6 +6,8 @@ This is a project contains following parts.
 - Healthy data processing and machine learning pipeline.
 - With pyspark and postgreSQL.
 
+> A Video to walkthrough the project: 
+
 ## How to use it
 
 You can choose to use the jupyter notebook or the python file. For Task1&2 using jupyter notebook, for Task3 using jupyter notebook and python scripts.
@@ -16,24 +18,54 @@ You can choose to use the jupyter notebook or the python file. For Task1&2 using
 
 ### Create your conda or pip env 
 
- `conda create --name <env> `--file ``requirments.txt``
+ `conda create --name <env> --file requirments.txt`
 
-It will create a conda env for the project. 
+You should create your env for project.
 
 ### Using Jupyter Notebook
 
-Just run jupyter notebooks in Notebook folder.
+Just run jupyter notebooks in Notebook folder using python kernel in your env.
 
 ### Using Python Scripts
 
-For Task3, you can use python scripts.
+For Task3, you can use python scripts in your env.
 
 `python task3.py input_path <input_path> --output_path <output_path> --verbose <verbose> --wandb <is_wandb>`
 You can use `python task3.py -h` to see the help information of arguments. You must specify the input_path (Your data path like `/data`)
 
+## Model Performance
+
+In this project, I use pyspark for General Machine Learning Model, utiliz pytorch for Deep Learning Model.
+
+#### Train and Test
+
+- train = 0.8 * Whole_data
+
+- test = 0.2 * whole_data
+
+#### ML Models
+
+- Linear Regression
+  - Reason to choose: **Use linear regression as baseline performance for comparison to facilitate implementation.**
+
+- Decision Tree
+  - Reason to choose: **Tree models are always proven to be more effective on tabular data, especially tree models powered by gradient boosting algorithms, and I chose decision trees to exceed baseline performance.**
+
+
+#### DL Models
+
+- MLP(1024, 512, 256, 64): An ordinary multi-layer perceptron model, using Adam as the optimizer and MSE as the loss function, with a learning rate of 0.0003 and training 300 epochs.
+  - Reason to choose: A simple yet effective MLP model is common as a baseline, which facilitates comparison of performance and is easy to implement.
+  - Train Loss: 
+  - Val Loss: 
+- MLP with residual link(1024, 512, 512, 256, 64, 32, 16): An MLP with residual link (Kaiming He). using Adam as the optimizer and MSE as the loss function, with a learning rate of 0.0003 and training 100 epochs. 
+  - Reason to choose: **Residual connections give us the opportunity to create deeper networks. The depth of the network should lead to better fitting performance.**
+  - Train Loss:
+  - Val Loss:
+
 ## Data Describtion
 
-- Data Report:
+- Data Report: In dataview.html. You can download it and open in a web browser.
 - Data EDA: [FIFA2022 EDA](https://www.kaggle.com/code/dylanhedded/fifa2022-eda)
 
 <details>

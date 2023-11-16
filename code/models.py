@@ -89,7 +89,3 @@ class MLPResidualRegressor(nn.Module):
             x = self.layers[i+1](x)
         x = self.output_layer(x)
         return x
-
-if __name__ == "__main__":
-    model = MLPRegressor(50, [128, 64, 32], 1)
-    print(model.__class__.__name__)
