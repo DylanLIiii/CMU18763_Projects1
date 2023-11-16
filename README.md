@@ -81,7 +81,7 @@ In this project, I use pyspark for General Machine Learning Model, utiliz pytorc
 
 **Conclusion**:  We use MLP as the baseline. We can see that when the epoch is high, both converge, even without the lr scheduler. However, the residual MLP that increases the learning rate, deepens the network, and trains for fewer epochs is worse. This may be This is because deeper networks require smaller learning rates and longer training rounds. But in general, neural networks perform better.
 
-<iframe src="https://wandb.ai/dylanli/18763/reports/Report-for-model-results--Vmlldzo1OTkyNDE1" style="border:none;height:1024px;width:100%">
+**SEE DETAILED LOG**: https://api.wandb.ai/links/dylanli/xfplxl1r
 
 ## Data Describtion
 
